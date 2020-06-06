@@ -1,67 +1,61 @@
----
 version: '3.3'
 
-services: 
+services:
   nextcloud-db:
-    image: mariadb
+    image: linuxserver/mariadb
     container_name: nextcloud-db
-    command: --transaction-isolation=READ-COMMITTED --log-bin=ROW
     restart: always
     volumes:
-      - /var/docker/nextcloud/database:/var/lib/mysql
+      - /var/docker/nextcloud/database_var:/var/lib/mysql
+      - /var/docker/nextcloud/database_config:/config
     environment:
-      - MYSQL_ROOT_PASSWORD= # Datenbank Passwort wählen
-      - MYSQL_PASSWORD= # Datenbank Passwort wählen, wird bei der Nextcloudinstallation abgefragt
+      - TZ=Europe/Berlin
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD= # Setze hier ein starkes Passwort
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
-      - MYSQL_INITDB_SKIP_TZINFO=1 # Behebt die bekannten Startprobleme der Datenbank
-      
-  nextcloud-redis:
-    image: redis:alpine
-    container_name: nextcloud-redis
-    hostname: nextcloud-redis
-    environment:
-        REDIS_PASSWORD: XXXXXXX # Redis Passwort wählen
-    networks:
-        - default
-    restart: always
-    
+      - MYSQL_PASSWORD=# Ein anderes Passwort
+	  
+	networks:
+      - internal_nextcloud
+	
+
+  # nextcloud-db-backup:
+  #   image: databack/mysql-backup
+  #   container_name: nextcloud-db-backup
+  #   depends_on:
+  #     - nextcloud-db
+  #   restart: always
+  #   volumes:
+  #     - /var/docker/nextcloud/backup:/db
+  #   environment:
+  #     - DB_DUMP_FREQ=60 # Backup jede Stunde - Angabe in Minuten
+  #     - DB_DUMP_BEGIN=2300 # Backup startet immer um 23 Uhr
+  #     - DB_DUMP_TARGET=/db
+  #     - DB_SERVER=nextcloud-db
+  #     - DB_USER=nextcloud
+  #     - DB_PASS= # Starkes Passwort von MYSQL_PASSWORD
+  #   user: "0" # Führt Backup als root User durch - ggf. anpassen
+  #   networks:
+  #     - internal_nextcloud
+
+
   nextcloud-app:
     image: nextcloud
     container_name: nextcloud-app
     restart: always
-    depends_on:
-      - nextcloud-db
-      - nextcloud-redis
-    environment:
-        REDIS_HOST: nextcloud-redis
-        REDIS_HOST_PASSWORD: XXXXXXX # Redis Passwort wählen (gleiches, wie oben)
     volumes: 
       - /var/docker/nextcloud/app:/var/www/html
-      # - EXTERNES DATENVERZEICHNIS:/var/www/html/data 
     links:
       - nextcloud-db
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.middlewares.nextcloud-https.redirectscheme.scheme=https"
-      - "traefik.http.routers.nextcloud-http.entrypoints=web"
-      - "traefik.http.routers.nextcloud-http.rule=Host(`nextcloud.example.com`)" #Domain anpassen
-      - "traefik.http.routers.nextcloud-http.middlewares=nextcloud-https@docker"
-      - "traefik.http.routers.nextcloud.entrypoints=web-secure"
-      - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.example.com`)" #Domain anpassen
-      - "traefik.http.routers.nextcloud.tls=true"
-      - "traefik.http.routers.nextcloud.tls.certresolver=default"
-      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav,secHeaders@file"
-      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
-      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.regex=^/.well-known/ca(l|rd)dav"
-      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.replacement=/remote.php/dav/"
     networks:
-      - traefik_proxy
+      - internal_nextcloud
       - default
-    
+
 networks:
-  traefik_proxy:
-    external:
-      name: traefik_proxy
+  internal_nextcloud:
+	driver: bridge
+    internal: true
   default:
     driver: bridge
