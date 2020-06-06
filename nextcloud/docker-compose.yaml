@@ -55,7 +55,7 @@ services:
 
 networks:
   internal_nextcloud:
-	driver: bridge
+    driver: bridge
     internal: true
   default:
     driver: bridge
