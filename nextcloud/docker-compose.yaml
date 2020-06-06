@@ -19,7 +19,7 @@ services:
       
     networks:
       - internal_nextcloud
-	
+
 
   # nextcloud-db-backup:
   #   image: databack/mysql-backup
