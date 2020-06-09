@@ -20,17 +20,6 @@ services:
     secrets:
       - mysql_root_password
       - mysql_user_password
-      
-  nextcloud-redis:
-    image: redis:alpine
-    container_name: nextcloud-redis
-    hostname: nextcloud-redis
-    environment:
-        REDIS_PASSWORD: XXXXXXX 
-        # Redis Passwort wählen (Es gibt einen Workaround für Redis Secrets, aber wir sollten warten, bis das Ganze offiziell ist)
-    networks:
-        - default
-    restart: always
     
   nextcloud-app:
     image: nextcloud
@@ -38,14 +27,11 @@ services:
     restart: always
     depends_on:
       - nextcloud-db
-      - nextcloud-redis
     environment:
         MYSQL_USER: nextcloud
         MYSQL_DATABASE: nextcloud
         MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
         MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-        REDIS_HOST: nextcloud-redis
-        REDIS_HOST_PASSWORD= XXXXXXX # Redis Passwort wählen (gleiches, wie oben)
     secrets:
       - mysql_root_password
       - mysql_user_password
@@ -54,7 +40,6 @@ services:
       # - EXTERNES DATENVERZEICHNIS:/var/www/html/data 
     links:
       - nextcloud-db
-      - nextcloud-redis
     networks:
       - nextcloud-db
       - default
