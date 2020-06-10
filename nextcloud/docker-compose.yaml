@@ -10,7 +10,7 @@ services:
         - nextcloud-db
     restart: always
     volumes:
-      - /var/docker/nextcloud/database:/var/lib/mysql
+      - /home/nextcloud/database:/var/lib/mysql
     environment:
         MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
         #MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
@@ -38,7 +38,7 @@ services:
       - mysql_root_password
       - mysql_user_password
     volumes: 
-      - /var/docker/nextcloud/app:/var/www/html
+      - /home/nextcloud/app:/var/www/html
       # - EXTERNES DATENVERZEICHNIS:/var/www/html/data 
     links:
       - nextcloud-db
@@ -57,6 +57,6 @@ networks:
     
 secrets:
   mysql_root_password:
-    file: /opt/docker/secrets/mysql_root_password
+    file: /home/nextcloud/secrets/mysql_root_password
   mysql_user_password:
-    file: /opt/docker/secrets/mysql_user_password
+    file: /home/nextcloud/secrets/mysql_user_password
