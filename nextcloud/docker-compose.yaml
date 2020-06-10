@@ -45,6 +45,8 @@ services:
     networks:
       - nextcloud-db
       - default
+    ports:
+      - 80:80
     
 networks:
   nextcloud-db:
