@@ -223,10 +223,10 @@ sudo apt update -y
 sudo apt install docker-ce docker-ce-cli containerd.io -y
 
 sudo apt update
-sudo apt install cron sed
+sudo apt install cron -y
 sudo systemctl enable cron
 
-sudo apt install docker-compose wget -y
+sudo apt install docker-compose wget sed -y
 
 sudo adduser nextcloud --disabled-login --gecos "" --ingroup docker
 sudo runuser -l nextcloud -c 'wget -P /home/nextcloud/ https://raw.githubusercontent.com/KnallbertLp/docker-homelab/master/nextcloud/docker-compose.yaml'
