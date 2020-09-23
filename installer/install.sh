@@ -69,7 +69,7 @@ sudo ufw allow 5353/udp
 
 sudo echo 'What should the name of the server be?'
 read setname
-sudo hostnamectl set-hostname $setname
+sudo hostnamectl set-hostname "$setname"
 sudo systemctl restart avahi-daemon
 
 sudo echo 'Setting up unattended-upgrades ...'
@@ -251,7 +251,6 @@ for foo in "${blkids[@]}"; do
       echo "This will be choice number (1)"
       echo
       blkids=("  >> ${foo} <<  " "${blkids[@]}")
-      autoexists=true
       break;
     fi
 done
