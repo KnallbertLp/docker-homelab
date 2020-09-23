@@ -53,6 +53,7 @@ sudo netplan apply
 sudo echo 'Wifi setup done!'
 read -p 'Press any key to resume...'
 
+sudo echo 'Setting up ufw ... '
 sudo apt update -y
 sudo apt full-upgrade -y
 sudo apt autoremove -y
@@ -60,6 +61,7 @@ sudo apt autoremove -y
 sudo apt install ufw -y
 sudo ufw enable
 
+sudo echo 'Setting up avahi network discovery ...'
 sudo apt install avahi-daemon -y
 sudo systemctl start avahi-daemon
 sudo systemctl enable avahi-daemon
@@ -70,6 +72,7 @@ read setname
 sudo hostnamectl set-hostname $setname
 sudo systemctl restart avahi-daemon
 
+sudo echo 'Setting up unattended-upgrades ...'
 sudo apt update -y
 sudo apt full-upgrade -y
 sudo apt autoremove -y
@@ -216,18 +219,23 @@ APT::Periodic::AutocleanInterval "1";
 APT::Periodic::Unattended-Upgrade "1";
 ' > /etc/apt/apt.conf.d/20auto-upgrades
 
+sudo echo 'Setting up docker... '
 sudo apt install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt update -y
 sudo apt install docker-ce docker-ce-cli containerd.io -y
 
+sudo echo 'Setting up utilities for docker... '
 sudo apt update
 sudo apt install cron -y
 sudo systemctl enable cron
 
 sudo apt install docker-compose wget sed -y
 
+
+
+sudo echo 'Setting up nextcloud container... '
 sudo adduser nextcloud --disabled-login --gecos "" --ingroup docker
 sudo runuser -l nextcloud -c 'wget -P /home/nextcloud/ https://raw.githubusercontent.com/KnallbertLp/docker-homelab/master/nextcloud/docker-compose.yaml'
 sudo runuser -l nextcloud -c 'sed -i "s~MYSQL_PASSWORD:[a-zA-Z0-9[:space:]]*~MYSQL_PASSWORD: $(cat /dev/urandom | tr -dc '"'"'a-zA-Z0-9'"'"' | fold -w $(( $((( $RANDOM % 64 ))) + 100 )) | head -n 1)~g" docker-compose.yaml'
