@@ -231,9 +231,56 @@ sudo apt update
 sudo apt install cron -y
 sudo systemctl enable cron
 
-sudo apt install docker-compose wget sed -y
+sudo apt install docker-compose wget sed grep coreutils -y
 
 
+function mount_device {
+# $1 is the question, e.g. 'Which device do you want to use as storage for Nextcloud?: '
+# $2 is the standard mounting location, e.g. 'LABEL="nextcloud"' https://wiki.ubuntuusers.de/Labels/#Dateisystem-Label
+# $3 is the mounting options without the mounting location , e.g. '/home/nextcloud/storage ext4    defaults,nofail 0       2'
+declare -a blkids
+readarray -t blkids <<< "$(sudo blkid)"
+PS3="$1"
+autoexists=false
+chcksnmbr='^[0-9]+$'
+
+for foo in "${blkids[@]}"; do
+   if [[ $foo == *$2* ]]; then
+      echo "Automatic preselection possible!"
+      echo "  >> $foo <<  "
+      echo "This will be choice number (1)"
+      echo
+      blkids=("  >> ${foo} <<  " "${blkids[@]}")
+      autoexists=true
+      break;
+    fi
+done
+
+select item in "${blkids[@]}";
+do
+  if ! [[ $REPLY =~ $chcksnmbr ]] ; then
+   echo "Enter one of the available numbers"
+   mount_device "$1" "$2" "$3"
+  else
+    if [ "$REPLY" -gt 0 ] && [ "$REPLY" -le ${#blkids[@]} ] ; then
+      REPLY=$((REPLY-1))
+      echo "[$((REPLY+1))] > ${blkids[${REPLY}]}"
+      if [[ ${blkids[${REPLY}]} == *$2* ]]; then
+         echo "$(echo "$2" | tr -d '"')"  "$3" | sudo tee -a /etc/fstab > /dev/null
+      elif [[ ${blkids[${REPLY}]} == *UUID=* ]]; then
+         UUID=$(echo "${blkids[${REPLY}]}" | grep  -oE '\sUUID="[[:alnum:][:punct:]]+"\s'| tr -d '"' | sed 's/ *$//g')
+         echo "${UUID:1}  $3" | sudo tee -a /etc/fstab > /dev/null
+       fi
+    else
+      echo 'Enter one of the available numbers'
+      mount_device "$1" "$2" "$3"
+    fi
+  fi
+  break;
+done
+}
+
+mount_device 'Which device do you want to use as storage for Nextcloud?: ' 'LABEL="nextcloud"' '/home/nextcloud/storage ext4    defaults,nofail 0       2'
 
 sudo echo 'Setting up nextcloud docker container... '
 sudo adduser nextcloud --disabled-login --gecos "" --ingroup docker
