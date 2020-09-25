@@ -59,6 +59,10 @@ sudo apt full-upgrade -y
 sudo apt autoremove -y
 
 sudo apt install ufw -y
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw logging off 
 sudo ufw enable
 
 sudo echo 'Setting up avahi network discovery ...'
@@ -292,5 +296,7 @@ sudo ufw allow 80
 sudo apt install openssl -y
 openssl rand -base64 32 > /home/nextcloud/secrets/mysql_root_password
 openssl rand -base64 32 > /home/nextcloud/secrets/mysql_user_password
+
+sudo ufw reload 
 
 #sudo apt install openvpn -y
