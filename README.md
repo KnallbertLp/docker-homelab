@@ -2,7 +2,7 @@
 
 Dieses Repository ist meine persönliche Sammlung von Docker-Compose Dateien für mein Raspberry Pi 4 Model B.
 
-`wget https://git.io/JUaVG -O install.sh && bash install.sh`
+`wget https://git.io/JUaVG -O install.sh && sudo bash install.sh`
 
 ## Aufbau
 Jedes Verzeichnis enthält nur eine Software. Es lassen sich natürlich auch mehrere Produkte miteinander kombinieren um so die Anzahl an docker-compose.yaml Dateien zu verringern. Sollte eine Software eine Datenbank oder ähnliches benötigten, ist diese natürlich in der entsprechenden compose Datei enthalten.
