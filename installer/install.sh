@@ -293,7 +293,7 @@ done
 
 sudo echo 'Setting up nextcloud docker container... '
 sudo adduser nextcloud --disabled-login --gecos "" --ingroup docker
-sudo runuser -l nextcloud -c 'mkdir ~/storage'
+sudo runuser -l nextcloud -c 'mkdir -p /home/nextcloud/storage'
 mount_device 'Which device do you want to use as storage for Nextcloud?: ' 'LABEL="nextcloud"' '/home/nextcloud/storage ext4    defaults,nofail 0       2'
 sudo runuser -l nextcloud -c 'wget -P /home/nextcloud/ https://raw.githubusercontent.com/KnallbertLp/docker-homelab/master/nextcloud/docker-compose.yaml'
 sudo runuser -l nextcloud -c 'sed -i "s~MYSQL_PASSWORD:[a-zA-Z0-9[:space:]]*~MYSQL_PASSWORD: $(cat /dev/urandom | tr -dc '"'"'a-zA-Z0-9'"'"' | fold -w $(( $((( $RANDOM % 64 ))) + 100 )) | head -n 1)~g" docker-compose.yaml'
