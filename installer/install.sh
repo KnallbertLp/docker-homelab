@@ -1,4 +1,12 @@
 #!/bin/bash
+#
+# https://github.com/KnallbertLp/docker-homelab
+#
+
+if [[ "$EUID" -ne 0 ]]; then
+	echo "Sorry, you need to run this as root"
+	exit
+fi
 
 SOURCE='${BASH_SOURCE[0]}'
 while [ -h '$SOURCE' ]; do # resolve $SOURCE until the file is no longer a symlink
