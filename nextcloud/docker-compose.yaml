@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 ---
-version: '3.3'
+version: '3.7'
 
 services: 
   nextcloud-db:
@@ -21,7 +21,7 @@ services:
     container_name: nextcloud-db
     command: --transaction-isolation=READ-COMMITTED --log-bin=ROW
     networks:
-        - nextcloud-db
+        - backend
     restart: always
     volumes:
       - /home/nextcloud/storage/database:/var/lib/mysql
@@ -35,6 +35,15 @@ services:
     secrets:
       - mysql_root_password
       - mysql_user_password
+      
+  nextcloud-redis:
+    image: redis:alpine
+    container_name: nextcloud-redis
+    hostname: nextcloud-redis
+    networks:
+        - default
+    restart: always
+    command: redis-server --requirepass REDISPASSWORD # Redis Passwort wählen
     
   nextcloud-app:
     image: nextcloud
@@ -42,7 +51,10 @@ services:
     restart: always
     depends_on:
       - nextcloud-db
+      - nextcloud-redis
     environment:
+        REDIS_HOST: nextcloud-redis
+        REDIS_HOST_PASSWORD: REDISPASSWORD # Redis Passwort von oben
         MYSQL_HOST: nextcloud-db
         MYSQL_USER: nextcloud
         MYSQL_DATABASE: nextcloud
@@ -54,17 +66,29 @@ services:
     volumes: 
       - /home/nextcloud/storage/app:/var/www/html
       # - EXTERNES DATENVERZEICHNIS:/var/www/html/data 
-    links:
-      - nextcloud-db
+    #links:
+     # - nextcloud-db
     networks:
-      - nextcloud-db
+      - backend
       - default
-    ports:
-      - 80:80
-      - 443:443
-    
+    #ports:
+    #  - 80:80
+    #  - 443:443
+
+  nextcloud-cron:
+    image: nextcloud
+    restart: always
+    volumes:
+      - /home/nextcloud/storage/app:/var/www/html
+      # - EXTERNES DATENVERZEICHNIS:/var/www/html/data
+    entrypoint: /cron.sh
+    depends_on:
+      - nextcloud-db
+      - nextcloud-redis
+
 networks:
-  nextcloud-db:
+  backend:
+    name: nextcloud-backend
     driver: bridge
     internal: true
   default:
