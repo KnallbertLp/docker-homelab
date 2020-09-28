@@ -68,14 +68,12 @@ services:
     volumes: 
       - /home/nextcloud/storage/app:/var/www/html
       # - EXTERNES DATENVERZEICHNIS:/var/www/html/data 
-    #links:
-     # - nextcloud-db
     networks:
       - backend
       - default
-    #ports:
-    #  - 80:80
-    #  - 443:443
+    ports:
+      - 80:80
+      - 443:443
 
   nextcloud-cron:
     image: nextcloud
@@ -98,6 +96,6 @@ networks:
     
 secrets:
   mysql_root_password:
-    file: /home/nextcloud/secrets/mysql_root_password
+    file: /home/nextcloud/storage/secrets/mysql_root_password
   mysql_user_password:
-    file: /home/nextcloud/secrets/mysql_user_password
+    file: /home/nextcloud/storage/secrets/mysql_user_password
