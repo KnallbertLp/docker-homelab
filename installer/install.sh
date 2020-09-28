@@ -298,13 +298,13 @@ mount_device 'Which device do you want to use as storage for Nextcloud?: ' 'LABE
 sudo runuser -l nextcloud -c 'wget -P /home/nextcloud/ https://raw.githubusercontent.com/KnallbertLp/docker-homelab/master/nextcloud/docker-compose.yaml'
 sudo runuser -l nextcloud -c 'sed -i "s~MYSQL_PASSWORD:[a-zA-Z0-9[:space:]]*~MYSQL_PASSWORD: $(cat /dev/urandom | tr -dc '"'"'a-zA-Z0-9'"'"' | fold -w $(( $((( $RANDOM % 64 ))) + 100 )) | head -n 1)~g" docker-compose.yaml'
 sudo runuser -l nextcloud -c 'sed -i "s~REDISPASSWORD~$(cat /dev/urandom | tr -dc '"'"'a-zA-Z0-9'"'"' | fold -w $(( $((( $RANDOM % 64 ))) + 100 )) | head -n 1)~g" docker-compose.yaml'
-sudo runuser -l nextcloud -c 'mkdir -p /home/nextcloud/secrets'
+sudo runuser -l nextcloud -c 'mkdir -p /home/nextcloud/storage/secrets'
 sudo crontab -u nextcloud -l > mycron; echo '@reboot cd /home/nextcloud && docker-compose up -d' >> mycron && echo '0 * * * * cd /home/nextcloud && docker-compose up -d' >> mycron && crontab -u nextcloud mycron && rm -rf mycron
 sudo ufw allow 80
 
 sudo apt install openssl -y
-openssl rand -base64 32 > /home/nextcloud/secrets/mysql_root_password
-openssl rand -base64 32 > /home/nextcloud/secrets/mysql_user_password
+openssl rand -base64 32 > /home/nextcloud/storage/secrets/mysql_root_password
+openssl rand -base64 32 > /home/nextcloud/storage/secrets/mysql_user_password
 
 sudo ufw reload 
 
