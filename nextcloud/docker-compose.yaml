@@ -33,7 +33,7 @@ services:
         MYSQL_PASSWORD: test123
         MYSQL_DATABASE: nextcloud
         MYSQL_USER: nextcloud
-        MYSQL_INITDB_SKIP_TZINFO: 1 # Behebt die bekannten Startprobleme der Datenbank
+        MYSQL_INITDB_SKIP_TZINFO: 1 
     secrets:
       - mysql_root_password
       - mysql_user_password
@@ -45,7 +45,7 @@ services:
     networks:
         - default
     restart: always
-    command: redis-server --requirepass REDISPASSWORD # Redis Passwort wählen
+    command: redis-server --requirepass REDISPASSWORD
     
   nextcloud-app:
     image: nextcloud
@@ -56,7 +56,7 @@ services:
       - nextcloud-redis
     environment:
         REDIS_HOST: nextcloud-redis
-        REDIS_HOST_PASSWORD: REDISPASSWORD # Redis Passwort von oben
+        REDIS_HOST_PASSWORD: REDISPASSWORD 
         MYSQL_HOST: nextcloud-db
         MYSQL_USER: nextcloud
         MYSQL_DATABASE: nextcloud
@@ -67,7 +67,6 @@ services:
       - mysql_user_password
     volumes: 
       - /home/nextcloud/storage/app:/var/www/html
-      # - EXTERNES DATENVERZEICHNIS:/var/www/html/data 
     networks:
       - backend
       - default
@@ -81,7 +80,6 @@ services:
     restart: always
     volumes:
       - /home/nextcloud/storage/app:/var/www/html
-      # - EXTERNES DATENVERZEICHNIS:/var/www/html/data
     entrypoint: /cron.sh
     depends_on:
       - nextcloud-db
