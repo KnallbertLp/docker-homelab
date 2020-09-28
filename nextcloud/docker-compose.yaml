@@ -24,6 +24,8 @@ services:
         - backend
     restart: always
     volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - /home/nextcloud/storage/database:/var/lib/mysql
     environment:
         MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
