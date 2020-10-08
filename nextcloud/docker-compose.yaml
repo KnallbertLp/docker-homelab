@@ -74,16 +74,16 @@ services:
       - 80:80
       - 443:443
 
-  nextcloud-cron:
-    image: nextcloud
-    container_name: nextcloud-cron
-    restart: always
-    volumes:
-      - /home/nextcloud/storage/app:/var/www/html
-    entrypoint: /cron.sh
-    depends_on:
-      - nextcloud-db
-      - nextcloud-redis
+#  nextcloud-cron:
+#    image: nextcloud
+#    container_name: nextcloud-cron
+#    restart: always
+#    volumes:
+#      - /home/nextcloud/storage/app:/var/www/html
+#    entrypoint: /cron.sh
+#    depends_on:
+#      - nextcloud-db
+#      - nextcloud-redis
 
 networks:
   backend:
