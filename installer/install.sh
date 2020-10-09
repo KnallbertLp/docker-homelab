@@ -299,7 +299,7 @@ sudo runuser -l nextcloud -c 'wget -P /home/nextcloud/ https://raw.githubusercon
 sudo runuser -l nextcloud -c 'sed -i "s~MYSQL_PASSWORD:[a-zA-Z0-9[:space:]]*~MYSQL_PASSWORD: $(cat /dev/urandom | tr -dc '"'"'a-zA-Z0-9'"'"' | fold -w $(( $((( $RANDOM % 64 ))) + 100 )) | head -n 1)~g" docker-compose.yaml'
 sudo runuser -l nextcloud -c 'sed -i "s~REDISPASSWORD~$(cat /dev/urandom | tr -dc '"'"'a-zA-Z0-9'"'"' | fold -w $(( $((( $RANDOM % 64 ))) + 100 )) | head -n 1)~g" docker-compose.yaml'
 sudo runuser -l nextcloud -c 'mkdir -p /home/nextcloud/storage/secrets'
-sudo crontab -u nextcloud -l > mycron; echo '@reboot cd /home/nextcloud && docker-compose up -d' >> mycron && echo '0 * * * * cd /home/nextcloud && docker-compose up -d' >> mycron && echo '*/5 * * * * docker exec -d -u www-data nextcloud-app php -f /var/www/html/cron.php' >> mycron && echo '*/10 * * * *  docker exec -d -u www-data nextcloud-app ./occ preview:pre-generate' >> mycron && crontab -u nextcloud mycron && rm -rf mycron
+sudo crontab -u nextcloud -l > mycron; echo '@reboot cd /home/nextcloud && docker-compose pull --include-deps && docker-compose up -d' >> mycron && echo '0 * * * * cd /home/nextcloud && docker-compose pull --include-deps && docker-compose up -d' >> mycron && echo '*/5 * * * * docker exec -d -u www-data nextcloud-app php -f /var/www/html/cron.php' >> mycron && echo '*/10 * * * *  docker exec -d -u www-data nextcloud-app ./occ preview:pre-generate' >> mycron && crontab -u nextcloud mycron && rm -rf mycron
 sudo ufw allow 80
 
 sudo apt install openssl -y
