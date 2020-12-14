@@ -46,6 +46,8 @@ services:
         - default
     restart: always
     command: redis-server --requirepass REDISPASSWORD
+    secrets:
+      - redis_password
     
   nextcloud-app:
     image: nextcloud
@@ -65,6 +67,7 @@ services:
     secrets:
       - mysql_root_password
       - mysql_user_password
+      - redis_password
     volumes: 
       - /home/nextcloud/storage/app:/var/www/html
     networks:
@@ -98,3 +101,6 @@ secrets:
     file: /home/nextcloud/storage/secrets/mysql_root_password
   mysql_user_password:
     file: /home/nextcloud/storage/secrets/mysql_user_password
+  redis_password:
+    file: /home/nextcloud/storage/secrets/redis_password
+  
