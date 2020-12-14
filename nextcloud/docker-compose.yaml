@@ -29,8 +29,8 @@ services:
       - /home/nextcloud/storage/database:/var/lib/mysql
     environment:
         MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-        #MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-        MYSQL_PASSWORD: test123
+        MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+        #MYSQL_PASSWORD: test123
         MYSQL_DATABASE: nextcloud
         MYSQL_USER: nextcloud
         MYSQL_INITDB_SKIP_TZINFO: 1 
@@ -62,8 +62,8 @@ services:
         MYSQL_HOST: nextcloud-db
         MYSQL_USER: nextcloud
         MYSQL_DATABASE: nextcloud
-        #MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-        MYSQL_PASSWORD: test123
+        MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+        #MYSQL_PASSWORD: test123
     secrets:
       - mysql_root_password
       - mysql_user_password
