@@ -306,9 +306,12 @@ openssl rand -base64 $((( $(( $RANDOM % 64 )) + 100 ))) | tr -dc 'a-zA-Z0-9' > /
 sudo runuser -l nextcloud -c 'sed -i "s~MYSQLPASSWORD~$(cat /home/nextcloud/storage/secrets/mysql_user_password)~g" docker-compose.yaml'
 sudo runuser -l nextcloud -c 'sed -i "s~REDISPASSWORD~$(cat /home/nextcloud/storage/secrets/redis_password)~g" docker-compose.yaml'
 
-sudo crontab -u nextcloud -l > mycron; echo '@reboot cd /home/nextcloud && docker-compose pull --include-deps && docker-compose up -d && docker image prune -f' >> mycron && echo '0 * * * * cd /home/nextcloud && docker-compose pull --include-deps && docker-compose up -d && docker image prune -f' >> mycron && echo '*/5 * * * * docker exec -d -u www-data nextcloud-app php -f /var/www/html/cron.php' >> mycron && echo '*/10 * * * *  docker exec -d -u www-data nextcloud-app ./occ preview:pre-generate' >> mycron && crontab -u nextcloud mycron && rm -rf mycron
+sudo crontab -u nextcloud -l > mycron; echo '@reboot cd /home/nextcloud && docker-compose pull --include-deps && docker-compose up -d && docker image prune -f' >> mycron && echo '0 * * * * cd /home/nextcloud && docker-compose pull --include-deps && docker-compose up -d && docker image prune -f' >> mycron && echo '*/5 * * * * docker exec -d -u www-data nextcloud-app php -f /var/www/html/cron.php' >> mycron && echo '*/10 * * * *  docker exec -d -u www-data nextcloud-app ./occ preview:pre-generate' >> mycron && echo '@reboot cd /home/nextcloud && sed -i "s~#MYSQL_PASSWORD_FILE:~MYSQL_PASSWORD_FILE:~g" docker-compose.yaml && sed -i "s~MYSQL_PASSWORD:[a-zA-Z0-9[:space:]]*~#MYSQL_PASSWORD: The password is onli available as a secret.~g" docker-compose.yaml ' >> mycron && crontab -u nextcloud mycron && rm -rf mycron
 sudo ufw allow 80
 
 sudo ufw reload 
+sudo runuser -l nextcloud -c 'docker-compose up -d'
+
+
 
 #sudo apt install openvpn -y
