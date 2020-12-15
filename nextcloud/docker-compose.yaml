@@ -45,9 +45,12 @@ services:
     networks:
         - default
     restart: always
-    command: redis-server --requirepass REDISPASSWORD
     secrets:
       - redis_password
+    environment:
+         REDIS_PASSWORD_FILE: /run/secrets/redis_password
+    command: sh -c '(cat $$REDIS_PASSWORD_FILE | xargs redis-server --requirepass)'
+
     
   nextcloud-app:
     image: nextcloud
